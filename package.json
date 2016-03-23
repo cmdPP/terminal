@@ -2,8 +2,9 @@
   "name": "cmdpp-terminal",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
+    "prepublish": "gulp babel",
     "start": "babel-node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
