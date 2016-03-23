@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import CMD from 'cmdpp-core';
 import inquirer from 'inquirer';
 import fs from 'fs';
