@@ -1,5 +1,7 @@
 #! /usr/bin/env node
 
+// TODO: Fix save issues
+
 import CMD from 'cmdpp-core';
 import inquirer from 'inquirer';
 import fs from 'fs';
@@ -23,9 +25,9 @@ var fsCheck = (fileName, cb) => {
     // });
 
     try {
-        fs.access(fileName);
+        fs.accessSync(fileName);
     } catch (err) {
-        // console.error(err);
+        console.error(err);
         return false;
     }
     return true;
@@ -36,23 +38,6 @@ const savePath = getPath('.cmdPP', 'save.json');
 var cmd = new CMD({
     save: (cmdData) => {
         mkdir('.cmdPP');
-        // fs.access(getPath('.cmdPP', 'save.json'), fs.F_OK | fs.R_OK | fs.W_OK, (err) => {
-        //     if (err) {
-        //         console.error(err);
-        //         process.exit(1);
-        //     }
-        //     jsonfile.writeFileSync(getPath('.cmdPP', 'save.json'), cmdData, { spaces: 2 });
-        //
-        //     jsonfile.writeFile(getPath('.cmdPP', 'save.json'), cmdData, (err2) => {
-        //         if (err) {
-        //             console.error(err);
-        //             process.exit(1);
-        //         }
-        //     });
-        // });
-        // fsCheck(savePath, () => {
-        //     jsonfile.writeFileSync(savePath, cmdData, { spaces: 2 });
-        // });
         if (fsCheck(savePath)) {
             jsonfile.writeFileSync(savePath, cmdData, { spaces: 2 });
         } else {
@@ -60,47 +45,29 @@ var cmd = new CMD({
         }
     },
     load: () => {
-        // return jsonfile.readFileSync(getPath('.cmdPP', 'save.json'));
-        // fsCheck(savePath, () => {
-        //     if (err) {
-        //         mkdir('.cmdPP');
-        //         var newObj = {
-        //             data: 0,
-        //             money: 0,
-        //             increment: 1,
-        //             autoIncrement: 0,
-        //             unlocked: []
-        //         };
-        //         jsonfile.writeFileSync(savePath, newObj, { spaces: 2 });
-        //     } else {
-        //
-        //     }
-        // });
         if (fsCheck(savePath)) {
             return jsonfile.readFileSync(savePath);
         } else {
             mkdir('.cmdPP');
-            jsonfile.writeFileSync(savePath, {
-                data: 0,
-                money: 0,
-                increment: 1,
-                autoIncrement: 0,
-                unlocked: []
-            }, { spaces: 2 });
-            return jsonfile.readFileSync(savePath);
+            // jsonfile.writeFileSync(savePath, {
+            //     data: 0,
+            //     money: 0,
+            //     increment: 1,
+            //     autoIncrement: 0,
+            //     unlocked: []
+            // }, { spaces: 2 });
+            // return jsonfile.readFileSync(savePath);
+            return null;
         }
     },
     update: (cmdObj) => {
         // ui.updateBottomBar(`Data: ${cmdObj.formatBytes()}\tMoney: $${cmdObj.money}`);
         question.message = `Data: ${cmdObj.formatBytes()} | Money: $${cmdObj.money} >`;
+    },
+    reset: (cmdObj) => {
+        fs.unlinkSync(savePath);
     }
 });
-
-
-
-// console.log(questions);
-
-
 
 function createInquiry() {
     var inquirerCB = (ans) => {
