@@ -23,32 +23,57 @@ var fsCheck = (fileName) => {
     return true;
 };
 
+
+
 const saveDir = getPath('.cmdPP');
 const savePath = getPath('.cmdPP', 'save.json');
 
+var createNewSave = () => {
+    fs.closeSync(fs.openSync(savePath, 'w'));
+    jsonfile.writeFileSync(savePath, {
+        data: 0,
+        money: 0,
+        increment: 1,
+        autoIncrement: 1,
+        storage: "selectronTube",
+        unlocked: []
+    }, { spaces: 2 });
+};
+
+console.log('Save dir:', saveDir);
+console.log('Save path:', savePath);
 if (!fsCheck(saveDir)) {
     console.warn(`Save directory does not exist. Creating now at ${saveDir}`);
     fs.mkdirSync(saveDir);
 }
 if (!fsCheck(savePath)) {
     console.warn(`Save file does not exist. Creating now at ${savePath}`);
-    fs.closeSync(fs.openSync(savePath, 'w'));
+    createNewSave();
 }
 
 var cmd = new CMD({
     debug: false,
     funcs: {
+        respond: (...txt) => {
+            for (let line of txt) {
+                console.log(line);
+            }
+        },
         save: (cmdData) => {
             jsonfile.writeFileSync(savePath, cmdData, { spaces: 2 });
         },
         load: () => {
-            return jsonfile.readFileSync(savePath);
+            try {
+                return jsonfile.readFileSync(savePath);
+            } catch (e) {
+                console.error('There seems to be a problem with your save file.');
+                console.error('A new save file will be created.');
+                createNewSave();
+                return jsonfile.readFileSync(savePath);
+            }
         },
         update: (cmdObj) => {
             question.message = `Data: ${cmdObj.formatBytes()} | Money: $${cmdObj.money} >`;
-        },
-        reset: () => {
-            fs.unlinkSync(savePath);
         }
     },
     commandProvider: function() {
@@ -68,11 +93,6 @@ var cmd = new CMD({
 
 function createInquiry() {
     var inquirerCB = (ans) => {
-        // if (ans.command === "quit" || ans.command === "q") {
-        //     cmd.command('save');
-        //     cmd.respond("Now exiting.");
-        //     process.exit(0);
-        // }
         cmd.command(ans.command);
         createInquiry();
     };
