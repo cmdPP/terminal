@@ -1,5 +1,6 @@
 #! /usr/bin/env node
-
+import { Name } from 'charlatan';
+import Moniker from 'moniker';
 // TODO: Fix save issues
 
 import CMD from 'cmdpp-core';
@@ -84,8 +85,20 @@ var cmd = new CMD({
                     this.respond('Now exiting.');
                     process.exit(0);
                 },
-                desc: "Saves and exits game.",
-                unlocked: true
+                desc: "Saves and exits game."
+            },
+            sampleData: {
+                func: () => {
+                    if (this.data > 0) {
+                        var name = Name.firstName();
+                        var verb = (Math.random() < 0.5 ? 'likes' : 'dislikes');
+                        var sub = Moniker.generator([Moniker.noun]).choose();
+                        this.respond(`${name} ${verb} ${sub}`);
+                    } else {
+                        this.respond("You do not have enough data to use this command.");
+                    }
+                },
+                desc: "Prints a read-out sampling some collected data."
             }
         };
     }

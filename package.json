@@ -32,9 +32,11 @@
     "gulp-babel": "^6.1.2"
   },
   "dependencies": {
-    "cmdpp-core": "^0.3.0",
+    "charlatan": "^1.0.0",
+    "cmdpp-core": "^0.4.0",
     "inquirer": "^0.12.0",
     "jsonfile": "^2.2.3",
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "moniker": "^0.1.2"
   }
 }
