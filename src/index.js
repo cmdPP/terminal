@@ -52,32 +52,21 @@ if (!fsCheck(savePath)) {
     createNewSave();
 }
 
-var cmd = new CMD({
-    debug: false,
-    funcs: {
-        respond: (...txt) => {
-            for (let line of txt) {
-                console.log(line);
-            }
-        },
-        save: (cmdData) => {
-            jsonfile.writeFileSync(savePath, cmdData, { spaces: 2 });
-        },
-        load: () => {
-            try {
-                return jsonfile.readFileSync(savePath);
-            } catch (e) {
-                console.error('There seems to be a problem with your save file.');
-                console.error('A new save file will be created.');
-                createNewSave();
-                return jsonfile.readFileSync(savePath);
-            }
-        },
-        update: (cmdObj) => {
-            question.message = `Data: ${cmdObj.formatBytes()} | Money: $${cmdObj.money} >`;
+var cmd = new CMD(
+    (...txt) => txt.forEach((l) => console.log(l)),
+    (cmdData) => jsonfile.writeFileSync(savePath, cmdData, { spaces: 2 }),
+    () => {
+        try {
+            return jsonfile.readFileSync(savePath);
+        } catch (e) {
+            console.error('There seems to be a problem with your save file.');
+            console.error('A new save file will be created.');
+            createNewSave();
+            return jsonfile.readFileSync(savePath);
         }
     },
-    commandProvider: function() {
+    (cmdObj) => question.message = `Data: ${cmdObj.formatBytes()} | Money: $${cmdObj.money} >`,
+    function() {
         return {
             quit: {
                 func: () => {
@@ -102,7 +91,7 @@ var cmd = new CMD({
             }
         };
     }
-});
+);
 
 function createInquiry() {
     var inquirerCB = (ans) => {
